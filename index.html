@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>工作生活 · 每日打卡</title>
+    <title>wutingyin's 每日打卡</title>
     <style>
         * {
             margin: 0;
@@ -202,7 +202,7 @@
 
         .toggle-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 6px;
         }
         .toggle-item {
@@ -364,18 +364,18 @@
         }
         .week-summary .stat-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
-            gap: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 4px;
             text-align: center;
         }
         .week-summary .stat-item {
             background: white;
             border-radius: 6px;
-            padding: 8px 4px;
+            padding: 6px 2px;
             border: 1px solid var(--gray-200);
         }
         .week-summary .stat-item .num {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--primary);
         }
@@ -383,6 +383,53 @@
             font-size: 10px;
             color: var(--gray-500);
             margin-top: 2px;
+        }
+        .week-summary .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 8px 0 6px;
+            padding-top: 6px;
+            border-top: 1.5px dashed var(--gray-200);
+        }
+        .week-summary .section-title:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        .week-summary .month-total {
+            background: var(--primary-bg);
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .week-summary .month-total span {
+            white-space: nowrap;
+        }
+        .week-summary .diet-summary {
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.6;
+            padding: 4px 2px;
+        }
+        .week-summary .diet-summary .day-meal {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px dashed var(--gray-200);
+        }
+        .week-summary .diet-summary .day-meal .meal-label {
+            font-weight: 500;
+            color: var(--gray-500);
+            min-width: 44px;
         }
 
         .week-detail {
@@ -401,6 +448,11 @@
         }
         .week-detail .day-row .miss {
             color: var(--gray-300);
+        }
+        .week-detail .detail-note {
+            font-size: 12px;
+            color: var(--gray-500);
+            padding-left: 8px;
         }
 
         .tab-bar {
@@ -511,6 +563,17 @@
             .week-summary .stat-item .num {
                 color: #60a5fa;
             }
+            .week-summary .section-title {
+                border-color: #334155;
+            }
+            .week-summary .month-total {
+                background: #1e3a5f;
+                border-color: #60a5fa;
+                color: #60a5fa;
+            }
+            .week-summary .diet-summary .day-meal {
+                border-color: #334155;
+            }
             .platform-tag {
                 background: #0f172a;
                 border-color: #334155;
@@ -556,6 +619,10 @@
         .toast.success {
             background: var(--success);
         }
+
+        .mt-4 {
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -564,9 +631,9 @@
 
         <!-- 头部 -->
         <header class="header">
-            <h1>📋 SOP <span>每日打卡</span></h1>
+            <h1>📋 wutingyin's <span>每日打卡</span></h1>
             <div class="header-actions">
-                <button onclick="exportData()">📤 导出</button>
+                <button onclick="exportCSV()">📤 CSV</button>
                 <button onclick="document.getElementById('importInput').click()">📂 导入</button>
                 <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)" />
                 <button onclick="clearAll()" style="color:#dc2626;">🗑️</button>
@@ -593,7 +660,7 @@
             <!-- 平台执行 -->
             <div class="card">
                 <div class="card-title">📌 平台执行</div>
-                <div class="toggle-row" style="margin-bottom:8px;">
+                <div class="toggle-row" style="margin-bottom:6px;">
                     <label class="toggle-item" onclick="toggleCheck(this)">
                         <input type="checkbox" data-key="replied" />
                         <span class="emoji">✉️</span> 回复询盘
@@ -617,33 +684,40 @@
                         <input type="number" id="visitorCount" value="0" min="0" />
                     </div>
                 </div>
+                <!-- 备注框 -->
+                <div class="row mt-4">
+                    <div class="field">
+                        <label style="font-size:12px;color:var(--gray-500);">✉️ 询盘备注（客户/产品）</label>
+                        <input type="text" id="inquiryNote" placeholder="如：ABC / 太阳能板" />
+                    </div>
+                    <div class="field">
+                        <label style="font-size:12px;color:var(--gray-500);">👤 访客营销备注（客户/产品）</label>
+                        <input type="text" id="visitorNote" placeholder="如：XYZ / 传感器" />
+                    </div>
+                </div>
             </div>
 
-            <!-- 产品工作（拆分为两个独立项） -->
+            <!-- 产品工作 -->
             <div class="card">
                 <div class="card-title">📦 产品工作</div>
-
-                <!-- 国际站优化 -->
-                <div class="flex-between" style="margin-bottom:6px;">
+                <div class="flex-between" style="margin-bottom:4px;">
                     <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
                         <input type="checkbox" data-key="optimize" />
                         <span class="emoji">🔧</span> 国际站优化产品
                     </label>
                 </div>
-                <div class="field" style="margin-bottom:12px;">
-                    <label style="font-size:13px;color:var(--gray-500);">优化了哪款产品？</label>
+                <div class="field" style="margin-bottom:10px;">
+                    <label style="font-size:12px;color:var(--gray-500);">优化了哪款产品？</label>
                     <input type="text" id="optimizeProduct" placeholder="产品名称 / SKU" />
                 </div>
-
-                <!-- 独立站上传 -->
-                <div class="flex-between" style="margin-bottom:6px;">
+                <div class="flex-between" style="margin-bottom:4px;">
                     <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
                         <input type="checkbox" data-key="upload" />
                         <span class="emoji">📤</span> 独立站上传产品
                     </label>
                 </div>
                 <div class="field">
-                    <label style="font-size:13px;color:var(--gray-500);">上传了哪款产品？</label>
+                    <label style="font-size:12px;color:var(--gray-500);">上传了哪款产品？</label>
                     <input type="text" id="uploadProduct" placeholder="产品名称 / SKU" />
                 </div>
             </div>
@@ -651,20 +725,20 @@
             <!-- 社媒执行 -->
             <div class="card">
                 <div class="card-title">📱 社媒执行</div>
-                <div class="flex-between" style="margin-bottom:6px;">
+                <div class="flex-between" style="margin-bottom:4px;">
                     <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
                         <input type="checkbox" data-key="social" />
                         <span class="emoji">📢</span> 社媒发帖
                     </label>
                 </div>
-                <div class="row" style="margin-bottom:8px;">
+                <div class="row" style="margin-bottom:6px;">
                     <div class="inline-field">
                         <label>📝 发帖封数</label>
                         <input type="number" id="socialCount" value="0" min="0" />
                     </div>
                 </div>
                 <div class="field">
-                    <label style="font-size:13px;color:var(--gray-500);">发布平台（点击选择）</label>
+                    <label style="font-size:12px;color:var(--gray-500);">发布平台（点击选择）</label>
                     <div class="platform-tags" id="platformTags">
                         <span class="platform-tag" data-platform="fans">粉丝通</span>
                         <span class="platform-tag" data-platform="linkedin">LinkedIn</span>
@@ -672,30 +746,48 @@
                         <span class="platform-tag" data-platform="instagram">Instagram</span>
                     </div>
                 </div>
+                <div class="field mt-4">
+                    <label style="font-size:12px;color:var(--gray-500);">发帖内容标题（可选）</label>
+                    <input type="text" id="socialNote" placeholder="如：太阳能板安装案例" />
+                </div>
             </div>
 
-            <!-- 客户维护 -->
+            <!-- 客户维护 + RFQ -->
             <div class="card">
                 <div class="card-title">🤝 客户维护</div>
-                <div class="flex-between" style="margin-bottom:6px;">
+
+                <div class="flex-between" style="margin-bottom:4px;">
                     <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
                         <input type="checkbox" data-key="oldclient" />
                         <span class="emoji">💬</span> 老客户维护
                     </label>
                 </div>
-                <div class="field" style="margin-bottom:12px;">
-                    <label style="font-size:13px;color:var(--gray-500);">联系了哪位老客户？</label>
+                <div class="field" style="margin-bottom:10px;">
+                    <label style="font-size:12px;color:var(--gray-500);">联系了哪位老客户？</label>
                     <input type="text" id="oldClientName" placeholder="客户名称" />
                 </div>
-                <div class="flex-between" style="margin-bottom:6px;">
+
+                <div class="flex-between" style="margin-bottom:4px;">
                     <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
                         <input type="checkbox" data-key="develop" />
                         <span class="emoji">🚀</span> 主动开发
                     </label>
                 </div>
-                <div class="inline-field">
+                <div class="inline-field" style="margin-bottom:10px;">
                     <label>📧 开发信数</label>
                     <input type="number" id="developCount" value="0" min="0" />
+                </div>
+
+                <!-- RFQ -->
+                <div class="flex-between" style="margin-bottom:4px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="rfq" />
+                        <span class="emoji">📋</span> RFQ报价
+                    </label>
+                </div>
+                <div class="field">
+                    <label style="font-size:12px;color:var(--gray-500);">报价备注（客户/产品/价格）</label>
+                    <input type="text" id="rfqNote" placeholder="如：ABC / 太阳能板300W / FOB $..." />
                 </div>
             </div>
 
@@ -722,8 +814,8 @@
                 </div>
                 <div class="row" style="margin-top:8px;">
                     <div class="field">
-                        <label>💧 饮水量 (杯)</label>
-                        <input type="number" id="water" placeholder="8" min="0" step="1" />
+                        <label>💧 饮水量 (ml)</label>
+                        <input type="number" id="water" placeholder="1500" min="0" step="50" />
                     </div>
                     <div class="field">
                         <label>💩 排便</label>
@@ -737,6 +829,25 @@
                 <div class="field mt-8">
                     <label>🏃 运动 (分钟)</label>
                     <input type="number" id="exercise" placeholder="30" min="0" step="5" />
+                </div>
+            </div>
+
+            <!-- 今日饮食 -->
+            <div class="card">
+                <div class="card-title">🍽️ 今日饮食</div>
+                <div class="row">
+                    <div class="field">
+                        <label>🥣 早餐</label>
+                        <input type="text" id="breakfast" placeholder="吃了什么？" />
+                    </div>
+                    <div class="field">
+                        <label>🥗 午餐</label>
+                        <input type="text" id="lunch" placeholder="吃了什么？" />
+                    </div>
+                </div>
+                <div class="field mt-4">
+                    <label>🍲 晚餐</label>
+                    <input type="text" id="dinner" placeholder="吃了什么？" />
                 </div>
             </div>
 
@@ -771,17 +882,43 @@
         <div class="tab-content" id="tab-review">
 
             <div class="card">
-                <div class="card-title">📊 本周汇总 <span id="weekRange" style="font-weight:400;font-size:13px;color:var(--gray-500);"></span></div>
+                <div class="card-title">📊 周汇总 <span id="weekRange" style="font-weight:400;font-size:13px;color:var(--gray-500);"></span></div>
+
                 <div class="week-summary">
+                    <!-- 本月累计 -->
+                    <div class="month-total" id="monthTotal">
+                        <span>📅 本月打卡: <strong id="mDays">0</strong>天</span>
+                        <span>✉️ 询盘: <strong id="mInquiry">0</strong></span>
+                        <span>📤 营销: <strong id="mVisitor">0</strong></span>
+                        <span>📋 RFQ: <strong id="mRfq">0</strong></span>
+                        <span>🏃 运动: <strong id="mExercise">0</strong>分</span>
+                    </div>
+
+                    <div class="section-title">💼 工作</div>
                     <div class="stat-row" id="weekStats">
                         <div class="stat-item"><div class="num" id="wDays">0</div><div class="label">📅 打卡</div></div>
                         <div class="stat-item"><div class="num" id="wReplied">0</div><div class="label">✉️ 询盘</div></div>
-                        <div class="stat-item"><div class="num" id="wVisitor">0</div><div class="label">👤 访客营销</div></div>
+                        <div class="stat-item"><div class="num" id="wVisitor">0</div><div class="label">👤 营销</div></div>
                         <div class="stat-item"><div class="num" id="wOptimize">0</div><div class="label">🔧 优化</div></div>
                         <div class="stat-item"><div class="num" id="wUpload">0</div><div class="label">📤 上传</div></div>
                         <div class="stat-item"><div class="num" id="wSocial">0</div><div class="label">📢 社媒</div></div>
                         <div class="stat-item"><div class="num" id="wOldClient">0</div><div class="label">🤝 维护</div></div>
                         <div class="stat-item"><div class="num" id="wDevelop">0</div><div class="label">🚀 开发</div></div>
+                        <div class="stat-item"><div class="num" id="wRfq">0</div><div class="label">📋 RFQ</div></div>
+                    </div>
+
+                    <div class="section-title">🌿 生活健康</div>
+                    <div class="stat-row" id="weekLifeStats">
+                        <div class="stat-item"><div class="num" id="wWakeEarly">0</div><div class="label">⏰ 早7点前</div></div>
+                        <div class="stat-item"><div class="num" id="wWeight">--</div><div class="label">⚖️ 体重</div></div>
+                        <div class="stat-item"><div class="num" id="wWater">0</div><div class="label">💧 饮水(ml)</div></div>
+                        <div class="stat-item"><div class="num" id="wBowel">0</div><div class="label">💩 排便</div></div>
+                        <div class="stat-item"><div class="num" id="wExercise">0</div><div class="label">🏃 运动(分)</div></div>
+                    </div>
+
+                    <div class="section-title">🍽️ 本周三餐记录</div>
+                    <div class="diet-summary" id="dietSummary">
+                        <div class="text-muted" style="padding:4px 0;">暂无数据</div>
                     </div>
                 </div>
             </div>
@@ -793,7 +930,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-outline" onclick="exportData()" style="margin-bottom:14px;">📤 导出全部数据 (JSON)</button>
+            <button class="btn btn-outline" onclick="exportCSV()" style="margin-bottom:14px;">📤 导出 CSV（Excel可打开）</button>
         </div>
 
         <!-- Toast -->
@@ -804,7 +941,7 @@
         // ================================================================
         //  数据层
         // ================================================================
-        const STORAGE_KEY = 'sop_daily_data_v2';
+        const STORAGE_KEY = 'sop_daily_data_v4';
 
         function getDefaultDay() {
             return {
@@ -814,6 +951,8 @@
                 customer: false,
                 inquiryCount: 0,
                 visitorCount: 0,
+                inquiryNote: '',
+                visitorNote: '',
                 // 产品工作
                 optimize: false,
                 optimizeProduct: '',
@@ -822,18 +961,25 @@
                 // 社媒
                 social: false,
                 socialCount: 0,
-                platforms: [], // ['fans', 'linkedin', 'facebook', 'instagram']
+                platforms: [],
+                socialNote: '',
                 // 客户维护
                 oldclient: false,
                 oldClientName: '',
                 develop: false,
                 developCount: 0,
+                rfq: false,
+                rfqNote: '',
                 // 生活
                 wakeTime: '',
                 weight: '',
                 water: '',
                 bowel: '',
                 exercise: '',
+                // 饮食
+                breakfast: '',
+                lunch: '',
+                dinner: '',
                 learning: '',
                 win: '',
                 improve: '',
@@ -843,10 +989,7 @@
         }
 
         function getAllData() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : {};
-            } catch { return {}; }
+            try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
         }
 
         function saveDayData(date, data) {
@@ -871,17 +1014,13 @@
         const todayStr = () => new Date().toISOString().slice(0, 10);
         const $ = id => document.getElementById(id);
 
-        // 获取所有 toggle 开关的值
         function getToggles() {
             const toggles = document.querySelectorAll('.toggle-item input[type="checkbox"]');
             const result = {};
-            toggles.forEach(el => {
-                result[el.dataset.key] = el.checked;
-            });
+            toggles.forEach(el => { result[el.dataset.key] = el.checked; });
             return result;
         }
 
-        // 设置 toggle 开关
         function setToggles(data) {
             const toggles = document.querySelectorAll('.toggle-item input[type="checkbox"]');
             toggles.forEach(el => {
@@ -889,29 +1028,21 @@
                 if (key in data) {
                     el.checked = data[key];
                     const parent = el.closest('.toggle-item');
-                    if (el.checked) {
-                        parent.classList.add('checked');
-                    } else {
-                        parent.classList.remove('checked');
-                    }
+                    if (el.checked) parent.classList.add('checked');
+                    else parent.classList.remove('checked');
                 }
             });
         }
 
-        // 点击切换
         function toggleCheck(el) {
             const checkbox = el.querySelector('input[type="checkbox"]');
             if (checkbox) {
                 checkbox.checked = !checkbox.checked;
-                if (checkbox.checked) {
-                    el.classList.add('checked');
-                } else {
-                    el.classList.remove('checked');
-                }
+                if (checkbox.checked) el.classList.add('checked');
+                else el.classList.remove('checked');
             }
         }
 
-        // 平台标签
         function getSelectedPlatforms() {
             const tags = document.querySelectorAll('.platform-tag.selected');
             return Array.from(tags).map(t => t.dataset.platform);
@@ -927,11 +1058,8 @@
             });
         }
 
-        // 平台标签点击
         document.querySelectorAll('.platform-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
+            tag.addEventListener('click', function() { this.classList.toggle('selected'); });
         });
 
         // ================================================================
@@ -940,34 +1068,35 @@
         function loadDay(date) {
             const data = getDayData(date);
 
-            // Toggles
             setToggles(data);
 
-            // 数字输入
             $('inquiryCount').value = data.inquiryCount || 0;
             $('visitorCount').value = data.visitorCount || 0;
             $('socialCount').value = data.socialCount || 0;
             $('developCount').value = data.developCount || 0;
 
-            // 文本输入
+            $('inquiryNote').value = data.inquiryNote || '';
+            $('visitorNote').value = data.visitorNote || '';
             $('optimizeProduct').value = data.optimizeProduct || '';
             $('uploadProduct').value = data.uploadProduct || '';
+            $('socialNote').value = data.socialNote || '';
             $('oldClientName').value = data.oldClientName || '';
+            $('rfqNote').value = data.rfqNote || '';
 
-            // 平台标签
             setPlatforms(data.platforms || []);
 
-            // 生活
             $('wakeTime').value = data.wakeTime || '';
             $('weight').value = data.weight || '';
             $('water').value = data.water || '';
             $('bowel').value = data.bowel || '';
             $('exercise').value = data.exercise || '';
+            $('breakfast').value = data.breakfast || '';
+            $('lunch').value = data.lunch || '';
+            $('dinner').value = data.dinner || '';
             $('learning').value = data.learning || '';
             $('win').value = data.win || '';
             $('improve').value = data.improve || '';
 
-            // 状态
             const status = $('saveStatus');
             const lifeStatus = $('lifeSaveStatus');
             if (data.saved) {
@@ -982,7 +1111,6 @@
                 lifeStatus.textContent = '⏳ 未保存';
             }
 
-            // 周信息
             updateWeekInfo(date);
         }
 
@@ -992,32 +1120,35 @@
 
             return {
                 date: date,
-                // 平台执行
                 replied: toggles.replied || false,
                 visitor: toggles.visitor || false,
                 customer: toggles.customer || false,
                 inquiryCount: parseInt($('inquiryCount').value) || 0,
                 visitorCount: parseInt($('visitorCount').value) || 0,
-                // 产品工作
+                inquiryNote: $('inquiryNote').value.trim(),
+                visitorNote: $('visitorNote').value.trim(),
                 optimize: toggles.optimize || false,
                 optimizeProduct: $('optimizeProduct').value.trim(),
                 upload: toggles.upload || false,
                 uploadProduct: $('uploadProduct').value.trim(),
-                // 社媒
                 social: toggles.social || false,
                 socialCount: parseInt($('socialCount').value) || 0,
                 platforms: getSelectedPlatforms(),
-                // 客户维护
+                socialNote: $('socialNote').value.trim(),
                 oldclient: toggles.oldclient || false,
                 oldClientName: $('oldClientName').value.trim(),
                 develop: toggles.develop || false,
                 developCount: parseInt($('developCount').value) || 0,
-                // 生活
+                rfq: toggles.rfq || false,
+                rfqNote: $('rfqNote').value.trim(),
                 wakeTime: $('wakeTime').value,
                 weight: $('weight').value,
                 water: $('water').value,
                 bowel: $('bowel').value,
                 exercise: $('exercise').value,
+                breakfast: $('breakfast').value.trim(),
+                lunch: $('lunch').value.trim(),
+                dinner: $('dinner').value.trim(),
                 learning: $('learning').value.trim(),
                 win: $('win').value.trim(),
                 improve: $('improve').value.trim(),
@@ -1047,28 +1178,28 @@
             return { start: fmt(monday), end: fmt(sunday) };
         }
 
+        function getMonth(dateStr) {
+            return dateStr.slice(0, 7);
+        }
+
         function updateWeekInfo(dateStr) {
             const range = getWeekRange(dateStr);
             $('weekInfo').textContent = `📅 ${range.start} ~ ${range.end}`;
-            renderWeekSummary(range.start, range.end);
+            renderWeekSummary(range.start, range.end, dateStr);
         }
 
-        function renderWeekSummary(start, end) {
+        function renderWeekSummary(start, end, currentDate) {
             const all = getAllData();
             const days = [];
             let current = new Date(start + 'T00:00:00');
             const endDate = new Date(end + 'T00:00:00');
             while (current <= endDate) {
                 const key = current.toISOString().slice(0, 10);
-                if (all[key]) {
-                    days.push({ date: key, data: all[key] });
-                } else {
-                    days.push({ date: key, data: null });
-                }
+                days.push({ date: key, data: all[key] || null });
                 current.setDate(current.getDate() + 1);
             }
 
-            // 统计
+            // 统计周数据
             let totalDays = 0,
                 replied = 0,
                 visitor = 0,
@@ -1076,11 +1207,18 @@
                 upload = 0,
                 social = 0,
                 oldclient = 0,
-                develop = 0;
-            let repliedCount = 0,
-                visitorCount = 0,
-                socialCount = 0,
-                developCount = 0;
+                develop = 0,
+                rfq = 0;
+            let inquiryTotal = 0,
+                visitorTotal = 0,
+                socialTotal = 0,
+                developTotal = 0;
+            let wakeEarly = 0,
+                waterTotal = 0,
+                bowelTotal = 0,
+                exerciseTotal = 0;
+            let weights = [];
+            let dietRecords = [];
 
             days.forEach(d => {
                 if (d.data && d.data.saved) {
@@ -1092,13 +1230,33 @@
                     if (d.data.social) social++;
                     if (d.data.oldclient) oldclient++;
                     if (d.data.develop) develop++;
-                    repliedCount += d.data.inquiryCount || 0;
-                    visitorCount += d.data.visitorCount || 0;
-                    socialCount += d.data.socialCount || 0;
-                    developCount += d.data.developCount || 0;
+                    if (d.data.rfq) rfq++;
+                    inquiryTotal += d.data.inquiryCount || 0;
+                    visitorTotal += d.data.visitorCount || 0;
+                    socialTotal += d.data.socialCount || 0;
+                    developTotal += d.data.developCount || 0;
+
+                    // 生活
+                    if (d.data.wakeTime && d.data.wakeTime <= '07:00') wakeEarly++;
+                    if (d.data.water) waterTotal += parseInt(d.data.water) || 0;
+                    if (d.data.bowel === 'yes') bowelTotal++;
+                    if (d.data.exercise) exerciseTotal += parseInt(d.data.exercise) || 0;
+                    if (d.data.weight) weights.push(parseFloat(d.data.weight));
+
+                    // 饮食
+                    const meals = [];
+                    if (d.data.breakfast) meals.push('🥣' + d.data.breakfast);
+                    if (d.data.lunch) meals.push('🥗' + d.data.lunch);
+                    if (d.data.dinner) meals.push('🍲' + d.data.dinner);
+                    if (meals.length > 0) {
+                        dietRecords.push({ date: d.date, meals: meals });
+                    }
                 }
             });
 
+            const avgWeight = weights.length > 0 ? (weights.reduce((a, b) => a + b, 0) / weights.length).toFixed(1) : '--';
+
+            // 更新周统计
             $('wDays').textContent = totalDays;
             $('wReplied').textContent = replied + '天';
             $('wVisitor').textContent = visitor + '天';
@@ -1107,6 +1265,50 @@
             $('wSocial').textContent = social + '天';
             $('wOldClient').textContent = oldclient + '天';
             $('wDevelop').textContent = develop + '天';
+            $('wRfq').textContent = rfq + '天';
+
+            $('wWakeEarly').textContent = wakeEarly + '天';
+            $('wWeight').textContent = avgWeight !== '--' ? avgWeight + 'kg' : '--';
+            $('wWater').textContent = waterTotal + 'ml';
+            $('wBowel').textContent = bowelTotal + '天';
+            $('wExercise').textContent = exerciseTotal + '分';
+
+            // 本月累计
+            const monthKey = getMonth(currentDate);
+            let mDays = 0,
+                mInquiry = 0,
+                mVisitor = 0,
+                mRfq = 0,
+                mExercise = 0;
+            Object.keys(all).forEach(key => {
+                if (key.startsWith(monthKey) && all[key].saved) {
+                    mDays++;
+                    mInquiry += all[key].inquiryCount || 0;
+                    mVisitor += all[key].visitorCount || 0;
+                    if (all[key].rfq) mRfq++;
+                    if (all[key].exercise) mExercise += parseInt(all[key].exercise) || 0;
+                }
+            });
+            $('mDays').textContent = mDays;
+            $('mInquiry').textContent = mInquiry;
+            $('mVisitor').textContent = mVisitor;
+            $('mRfq').textContent = mRfq;
+            $('mExercise').textContent = mExercise > 0 ? mExercise + '分' : '0';
+
+            $('weekRange').textContent = `${start} ~ ${end}`;
+
+            // 饮食汇总
+            let dietHtml = '';
+            if (dietRecords.length === 0) {
+                dietHtml = '<div class="text-muted" style="padding:4px 0;">暂无饮食记录</div>';
+            } else {
+                dietRecords.forEach(record => {
+                    const label = record.date.slice(5);
+                    dietHtml +=
+                        `<div class="day-meal"><span>${label}</span><span>${record.meals.join(' | ')}</span></div>`;
+                });
+            }
+            $('dietSummary').innerHTML = dietHtml;
 
             // 详情
             let detailHtml = '';
@@ -1121,34 +1323,114 @@
                     if (d.data.social) tasks.push('📢');
                     if (d.data.oldclient) tasks.push('🤝');
                     if (d.data.develop) tasks.push('🚀');
+                    if (d.data.rfq) tasks.push('📋');
                     const emoji = tasks.length > 0 ? tasks.join(' ') : '✅';
-                    detailHtml += `<div class="day-row"><span>${label}</span><span class="done">${emoji}</span></div>`;
+                    let notes = [];
+                    if (d.data.inquiryNote) notes.push('✉️' + d.data.inquiryNote);
+                    if (d.data.visitorNote) notes.push('👤' + d.data.visitorNote);
+                    if (d.data.rfqNote) notes.push('📋' + d.data.rfqNote);
+                    const noteHtml = notes.length > 0 ? `<span class="detail-note">${notes.join(' | ')}</span>` : '';
+                    detailHtml +=
+                        `<div class="day-row"><span>${label}</span><span class="done">${emoji} ${noteHtml}</span></div>`;
                 } else {
                     detailHtml += `<div class="day-row"><span>${label}</span><span class="miss">—</span></div>`;
                 }
             });
             $('weekDetail').innerHTML = detailHtml;
-            $('weekRange').textContent = `${start} ~ ${end}`;
         }
 
         // ================================================================
-        //  导出 / 导入 / 清除
+        //  导出 CSV
         // ================================================================
-        function exportData() {
+        function exportCSV() {
             const all = getAllData();
-            if (Object.keys(all).length === 0) {
+            const dates = Object.keys(all).sort();
+            if (dates.length === 0) {
                 showToast('暂无数据可导出', '');
                 return;
             }
-            const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+
+            const headers = [
+                '日期',
+                '回复询盘', '询盘数', '询盘备注',
+                '访客营销', '营销数', '访客备注',
+                '客户通整理',
+                '国际站优化', '优化产品',
+                '独立站上传', '上传产品',
+                '社媒发帖', '发帖数', '平台', '社媒备注',
+                '老客户维护', '老客户名称',
+                '主动开发', '开发信数',
+                'RFQ报价', 'RFQ备注',
+                '起床时间', '体重', '饮水(ml)', '排便', '运动(分)',
+                '早餐', '午餐', '晚餐',
+                '学习心得', '成就感', '改进点'
+            ];
+
+            let rows = [headers];
+
+            dates.forEach(date => {
+                const d = all[date];
+                const row = [
+                    date,
+                    d.replied ? '是' : '否',
+                    d.inquiryCount || 0,
+                    d.inquiryNote || '',
+                    d.visitor ? '是' : '否',
+                    d.visitorCount || 0,
+                    d.visitorNote || '',
+                    d.customer ? '是' : '否',
+                    d.optimize ? '是' : '否',
+                    d.optimizeProduct || '',
+                    d.upload ? '是' : '否',
+                    d.uploadProduct || '',
+                    d.social ? '是' : '否',
+                    d.socialCount || 0,
+                    (d.platforms || []).join(';'),
+                    d.socialNote || '',
+                    d.oldclient ? '是' : '否',
+                    d.oldClientName || '',
+                    d.develop ? '是' : '否',
+                    d.developCount || 0,
+                    d.rfq ? '是' : '否',
+                    d.rfqNote || '',
+                    d.wakeTime || '',
+                    d.weight || '',
+                    d.water || '',
+                    d.bowel || '',
+                    d.exercise || '',
+                    d.breakfast || '',
+                    d.lunch || '',
+                    d.dinner || '',
+                    d.learning || '',
+                    d.win || '',
+                    d.improve || ''
+                ];
+                rows.push(row);
+            });
+
+            let csv = '\uFEFF';
+            rows.forEach(row => {
+                csv += row.map(cell => {
+                    if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes(
+                            '\n'))) {
+                        return '"' + cell.replace(/"/g, '""') + '"';
+                    }
+                    return cell;
+                }).join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `sop_data_${todayStr()}.json`;
+            link.download = `SOP数据_${todayStr()}.csv`;
             link.click();
             URL.revokeObjectURL(link.href);
-            showToast('📤 导出成功！', 'success');
+            showToast('📤 CSV导出成功！', 'success');
         }
 
+        // ================================================================
+        //  导入 / 清除
+        // ================================================================
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1202,20 +1484,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = $('recordDate');
             dateInput.value = todayStr();
-
-            // 加载
             loadDay(dateInput.value);
 
-            // 日期切换
-            dateInput.addEventListener('change', function() {
-                loadDay(this.value);
-            });
+            dateInput.addEventListener('change', function() { loadDay(this.value); });
 
-            // 保存按钮
             $('saveBtn').addEventListener('click', saveCurrent);
             $('saveLifeBtn').addEventListener('click', saveCurrent);
 
-            // Tab 切换
             document.querySelectorAll('.tab-bar button').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
@@ -1226,7 +1501,6 @@
                 });
             });
 
-            // 快捷键 Ctrl+S
             document.addEventListener('keydown', (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                     e.preventDefault();
@@ -1234,7 +1508,7 @@
                 }
             });
 
-            console.log('📋 SOP 打卡已启动！');
+            console.log('📋 wutingyin\'s 打卡已启动！');
         });
     </script>
 
