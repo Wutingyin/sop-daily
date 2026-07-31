@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>工作生活 · 每日打卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-bg: #eff6ff;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            padding: 16px 12px 100px;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0 16px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header h1 span {
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--gray-200);
+            color: var(--gray-500);
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .header-actions button {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        .header-actions button:active {
+            transform: scale(0.95);
+        }
+        .header-actions button:hover {
+            background: var(--gray-100);
+        }
+
+        .date-picker {
+            background: white;
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--gray-200);
+        }
+        .date-picker label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+        .date-picker input[type="date"] {
+            flex: 1;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 6px 0;
+            outline: none;
+            background: transparent;
+            color: var(--gray-900);
+            min-height: 36px;
+            font-family: var(--font);
+        }
+        .date-picker .week-info {
+            font-size: 13px;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px 16px 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card-title .badge {
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--gray-100);
+            color: var(--gray-500);
+            padding: 1px 10px;
+            border-radius: 20px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 440px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .field label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+        .field input,
+        .field select,
+        .field textarea {
+            padding: 10px 12px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: var(--font);
+            background: var(--gray-50);
+            transition: border 0.2s;
+            outline: none;
+            color: var(--gray-900);
+            width: 100%;
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+        .field textarea {
+            min-height: 44px;
+            resize: vertical;
+        }
+        .field input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .field input[type="number"]::-webkit-outer-spin-button,
+        .field input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .toggle-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 6px;
+        }
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border: 1.5px solid var(--gray-200);
+            transition: all 0.2s;
+            cursor: pointer;
+            touch-action: manipulation;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .toggle-item:active {
+            transform: scale(0.96);
+        }
+        .toggle-item.checked {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .toggle-item input[type="checkbox"] {
+            display: none;
+        }
+        .toggle-item .emoji {
+            font-size: 16px;
+        }
+
+        .inline-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inline-field label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+        .inline-field input {
+            width: 56px;
+            padding: 6px 4px;
+            text-align: center;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            background: var(--gray-50);
+            outline: none;
+            font-family: var(--font);
+        }
+        .inline-field input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .platform-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .platform-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--gray-100);
+            color: var(--gray-500);
+            border: 1.5px solid var(--gray-200);
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.2s;
+        }
+        .platform-tag:active {
+            transform: scale(0.95);
+        }
+        .platform-tag.selected {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            font-family: var(--font);
+            width: 100%;
+            background: var(--primary);
+            color: white;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn:hover {
+            background: var(--primary-light);
+        }
+        .btn-success {
+            background: var(--success);
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--gray-500);
+            border: 1.5px solid var(--gray-200);
+        }
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .status-badge.done {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 440px) {
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .week-summary {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 6px;
+            border: 1px solid var(--gray-200);
+        }
+        .week-summary .stat-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+            gap: 6px;
+            text-align: center;
+        }
+        .week-summary .stat-item {
+            background: white;
+            border-radius: 6px;
+            padding: 8px 4px;
+            border: 1px solid var(--gray-200);
+        }
+        .week-summary .stat-item .num {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .week-summary .stat-item .label {
+            font-size: 10px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .week-detail {
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.8;
+        }
+        .week-detail .day-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .week-detail .day-row .done {
+            color: var(--success);
+        }
+        .week-detail .day-row .miss {
+            color: var(--gray-300);
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            background: white;
+            padding: 4px;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 16px;
+        }
+        .tab-bar button {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray-500);
+            touch-action: manipulation;
+            font-family: var(--font);
+        }
+        .tab-bar button.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-bar button:active {
+            transform: scale(0.96);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --gray-50: #0f172a;
+                --gray-100: #1e293b;
+                --gray-200: #334155;
+                --gray-300: #475569;
+                --gray-500: #94a3b8;
+                --gray-700: #cbd5e1;
+                --gray-900: #f1f5f9;
+                --primary-bg: #1e3a5f;
+                --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            }
+            .card,
+            .date-picker,
+            .tab-bar {
+                background: #1e293b;
+                border-color: #334155;
+            }
+            .field input,
+            .field select,
+            .field textarea {
+                background: #0f172a;
+                border-color: #334155;
+                color: #f1f5f9;
+            }
+            .field input:focus,
+            .field select:focus,
+            .field textarea:focus {
+                background: #1e293b;
+                border-color: var(--primary);
+            }
+            .toggle-item {
+                background: #0f172a;
+                border-color: #334155;
+                color: #94a3b8;
+            }
+            .toggle-item.checked {
+                background: #1e3a5f;
+                border-color: var(--primary);
+                color: #60a5fa;
+            }
+            .week-summary {
+                background: #0f172a;
+                border-color: #334155;
+            }
+            .week-summary .stat-item {
+                background: #1e293b;
+                border-color: #334155;
+            }
+            .week-summary .stat-item .num {
+                color: #60a5fa;
+            }
+            .platform-tag {
+                background: #0f172a;
+                border-color: #334155;
+                color: #94a3b8;
+            }
+            .platform-tag.selected {
+                background: #1e3a5f;
+                border-color: #60a5fa;
+                color: #60a5fa;
+            }
+            .header-actions button {
+                background: #1e293b;
+                border-color: #334155;
+                color: #94a3b8;
+            }
+            .header-actions button:hover {
+                background: #334155;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--gray-900);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success {
+            background: var(--success);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+
+        <!-- 头部 -->
+        <header class="header">
+            <h1>📋 SOP <span>每日打卡</span></h1>
+            <div class="header-actions">
+                <button onclick="exportData()">📤 导出</button>
+                <button onclick="document.getElementById('importInput').click()">📂 导入</button>
+                <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)" />
+                <button onclick="clearAll()" style="color:#dc2626;">🗑️</button>
+            </div>
+        </header>
+
+        <!-- 日期 -->
+        <div class="date-picker">
+            <label>📅</label>
+            <input type="date" id="recordDate" />
+            <span class="week-info" id="weekInfo"></span>
+        </div>
+
+        <!-- Tab -->
+        <div class="tab-bar">
+            <button class="active" data-tab="tab-work">💼 工作</button>
+            <button data-tab="tab-life">🌿 生活</button>
+            <button data-tab="tab-review">📊 周汇总</button>
+        </div>
+
+        <!-- ====================== 工作面板 ====================== -->
+        <div class="tab-content active" id="tab-work">
+
+            <!-- 平台执行 -->
+            <div class="card">
+                <div class="card-title">📌 平台执行</div>
+                <div class="toggle-row" style="margin-bottom:8px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" data-key="replied" />
+                        <span class="emoji">✉️</span> 回复询盘
+                    </label>
+                    <label class="toggle-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" data-key="visitor" />
+                        <span class="emoji">👤</span> 访客营销
+                    </label>
+                    <label class="toggle-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" data-key="customer" />
+                        <span class="emoji">📇</span> 客户通整理
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="inline-field">
+                        <label>📨 询盘数</label>
+                        <input type="number" id="inquiryCount" value="0" min="0" />
+                    </div>
+                    <div class="inline-field">
+                        <label>📤 营销数</label>
+                        <input type="number" id="visitorCount" value="0" min="0" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品工作（拆分为两个独立项） -->
+            <div class="card">
+                <div class="card-title">📦 产品工作</div>
+
+                <!-- 国际站优化 -->
+                <div class="flex-between" style="margin-bottom:6px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="optimize" />
+                        <span class="emoji">🔧</span> 国际站优化产品
+                    </label>
+                </div>
+                <div class="field" style="margin-bottom:12px;">
+                    <label style="font-size:13px;color:var(--gray-500);">优化了哪款产品？</label>
+                    <input type="text" id="optimizeProduct" placeholder="产品名称 / SKU" />
+                </div>
+
+                <!-- 独立站上传 -->
+                <div class="flex-between" style="margin-bottom:6px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="upload" />
+                        <span class="emoji">📤</span> 独立站上传产品
+                    </label>
+                </div>
+                <div class="field">
+                    <label style="font-size:13px;color:var(--gray-500);">上传了哪款产品？</label>
+                    <input type="text" id="uploadProduct" placeholder="产品名称 / SKU" />
+                </div>
+            </div>
+
+            <!-- 社媒执行 -->
+            <div class="card">
+                <div class="card-title">📱 社媒执行</div>
+                <div class="flex-between" style="margin-bottom:6px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="social" />
+                        <span class="emoji">📢</span> 社媒发帖
+                    </label>
+                </div>
+                <div class="row" style="margin-bottom:8px;">
+                    <div class="inline-field">
+                        <label>📝 发帖封数</label>
+                        <input type="number" id="socialCount" value="0" min="0" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label style="font-size:13px;color:var(--gray-500);">发布平台（点击选择）</label>
+                    <div class="platform-tags" id="platformTags">
+                        <span class="platform-tag" data-platform="fans">粉丝通</span>
+                        <span class="platform-tag" data-platform="linkedin">LinkedIn</span>
+                        <span class="platform-tag" data-platform="facebook">Facebook</span>
+                        <span class="platform-tag" data-platform="instagram">Instagram</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 客户维护 -->
+            <div class="card">
+                <div class="card-title">🤝 客户维护</div>
+                <div class="flex-between" style="margin-bottom:6px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="oldclient" />
+                        <span class="emoji">💬</span> 老客户维护
+                    </label>
+                </div>
+                <div class="field" style="margin-bottom:12px;">
+                    <label style="font-size:13px;color:var(--gray-500);">联系了哪位老客户？</label>
+                    <input type="text" id="oldClientName" placeholder="客户名称" />
+                </div>
+                <div class="flex-between" style="margin-bottom:6px;">
+                    <label class="toggle-item" onclick="toggleCheck(this)" style="flex:1;">
+                        <input type="checkbox" data-key="develop" />
+                        <span class="emoji">🚀</span> 主动开发
+                    </label>
+                </div>
+                <div class="inline-field">
+                    <label>📧 开发信数</label>
+                    <input type="number" id="developCount" value="0" min="0" />
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="saveBtn" style="margin-bottom:14px;">💾 保存今日打卡</button>
+            <div class="text-center text-muted">
+                <span id="saveStatus" class="status-badge pending">⏳ 未保存</span>
+            </div>
+        </div>
+
+        <!-- ====================== 生活面板 ====================== -->
+        <div class="tab-content" id="tab-life">
+
+            <div class="card">
+                <div class="card-title">🌅 早起与健康</div>
+                <div class="row">
+                    <div class="field">
+                        <label>⏰ 起床时间</label>
+                        <input type="time" id="wakeTime" step="60" />
+                    </div>
+                    <div class="field">
+                        <label>⚖️ 体重 (kg)</label>
+                        <input type="number" id="weight" placeholder="65.5" step="0.1" min="20" max="300" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:8px;">
+                    <div class="field">
+                        <label>💧 饮水量 (杯)</label>
+                        <input type="number" id="water" placeholder="8" min="0" step="1" />
+                    </div>
+                    <div class="field">
+                        <label>💩 排便</label>
+                        <select id="bowel">
+                            <option value="">—</option>
+                            <option value="yes">✅ 有</option>
+                            <option value="no">❌ 无</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field mt-8">
+                    <label>🏃 运动 (分钟)</label>
+                    <input type="number" id="exercise" placeholder="30" min="0" step="5" />
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📖 今日学习心得</div>
+                <div class="field">
+                    <textarea id="learning" placeholder="今天学到了什么？英语、AI、外贸知识..." rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🧘 每日复盘</div>
+                <div class="review-grid">
+                    <div class="field">
+                        <label style="font-size:13px;color:var(--gray-500);">🌟 今天最有成就感的事</label>
+                        <textarea id="win" placeholder="哪怕很小的事..." rows="2"></textarea>
+                    </div>
+                    <div class="field">
+                        <label style="font-size:13px;color:var(--gray-500);">🔧 今天哪里可以改进</label>
+                        <textarea id="improve" placeholder="明天可以做得更好..." rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="saveLifeBtn" style="margin-bottom:14px;">💾 保存生活记录</button>
+            <div class="text-center text-muted">
+                <span id="lifeSaveStatus" class="status-badge pending">⏳ 未保存</span>
+            </div>
+        </div>
+
+        <!-- ====================== 周汇总面板 ====================== -->
+        <div class="tab-content" id="tab-review">
+
+            <div class="card">
+                <div class="card-title">📊 本周汇总 <span id="weekRange" style="font-weight:400;font-size:13px;color:var(--gray-500);"></span></div>
+                <div class="week-summary">
+                    <div class="stat-row" id="weekStats">
+                        <div class="stat-item"><div class="num" id="wDays">0</div><div class="label">📅 打卡</div></div>
+                        <div class="stat-item"><div class="num" id="wReplied">0</div><div class="label">✉️ 询盘</div></div>
+                        <div class="stat-item"><div class="num" id="wVisitor">0</div><div class="label">👤 访客营销</div></div>
+                        <div class="stat-item"><div class="num" id="wOptimize">0</div><div class="label">🔧 优化</div></div>
+                        <div class="stat-item"><div class="num" id="wUpload">0</div><div class="label">📤 上传</div></div>
+                        <div class="stat-item"><div class="num" id="wSocial">0</div><div class="label">📢 社媒</div></div>
+                        <div class="stat-item"><div class="num" id="wOldClient">0</div><div class="label">🤝 维护</div></div>
+                        <div class="stat-item"><div class="num" id="wDevelop">0</div><div class="label">🚀 开发</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 本周每日详情</div>
+                <div class="week-detail" id="weekDetail">
+                    <div class="text-muted" style="padding:12px 0;">暂无数据</div>
+                </div>
+            </div>
+
+            <button class="btn btn-outline" onclick="exportData()" style="margin-bottom:14px;">📤 导出全部数据 (JSON)</button>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  数据层
+        // ================================================================
+        const STORAGE_KEY = 'sop_daily_data_v2';
+
+        function getDefaultDay() {
+            return {
+                // 平台执行
+                replied: false,
+                visitor: false,
+                customer: false,
+                inquiryCount: 0,
+                visitorCount: 0,
+                // 产品工作
+                optimize: false,
+                optimizeProduct: '',
+                upload: false,
+                uploadProduct: '',
+                // 社媒
+                social: false,
+                socialCount: 0,
+                platforms: [], // ['fans', 'linkedin', 'facebook', 'instagram']
+                // 客户维护
+                oldclient: false,
+                oldClientName: '',
+                develop: false,
+                developCount: 0,
+                // 生活
+                wakeTime: '',
+                weight: '',
+                water: '',
+                bowel: '',
+                exercise: '',
+                learning: '',
+                win: '',
+                improve: '',
+                saved: false,
+                date: ''
+            };
+        }
+
+        function getAllData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch { return {}; }
+        }
+
+        function saveDayData(date, data) {
+            const all = getAllData();
+            all[date] = data;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        }
+
+        function getDayData(date) {
+            const all = getAllData();
+            const def = getDefaultDay();
+            if (all[date]) {
+                return { ...def, ...all[date], date: date };
+            }
+            def.date = date;
+            return def;
+        }
+
+        // ================================================================
+        //  UI 操作
+        // ================================================================
+        const todayStr = () => new Date().toISOString().slice(0, 10);
+        const $ = id => document.getElementById(id);
+
+        // 获取所有 toggle 开关的值
+        function getToggles() {
+            const toggles = document.querySelectorAll('.toggle-item input[type="checkbox"]');
+            const result = {};
+            toggles.forEach(el => {
+                result[el.dataset.key] = el.checked;
+            });
+            return result;
+        }
+
+        // 设置 toggle 开关
+        function setToggles(data) {
+            const toggles = document.querySelectorAll('.toggle-item input[type="checkbox"]');
+            toggles.forEach(el => {
+                const key = el.dataset.key;
+                if (key in data) {
+                    el.checked = data[key];
+                    const parent = el.closest('.toggle-item');
+                    if (el.checked) {
+                        parent.classList.add('checked');
+                    } else {
+                        parent.classList.remove('checked');
+                    }
+                }
+            });
+        }
+
+        // 点击切换
+        function toggleCheck(el) {
+            const checkbox = el.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                if (checkbox.checked) {
+                    el.classList.add('checked');
+                } else {
+                    el.classList.remove('checked');
+                }
+            }
+        }
+
+        // 平台标签
+        function getSelectedPlatforms() {
+            const tags = document.querySelectorAll('.platform-tag.selected');
+            return Array.from(tags).map(t => t.dataset.platform);
+        }
+
+        function setPlatforms(platforms) {
+            const tags = document.querySelectorAll('.platform-tag');
+            tags.forEach(t => {
+                t.classList.remove('selected');
+                if (platforms && platforms.includes(t.dataset.platform)) {
+                    t.classList.add('selected');
+                }
+            });
+        }
+
+        // 平台标签点击
+        document.querySelectorAll('.platform-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+
+        // ================================================================
+        //  加载 / 保存
+        // ================================================================
+        function loadDay(date) {
+            const data = getDayData(date);
+
+            // Toggles
+            setToggles(data);
+
+            // 数字输入
+            $('inquiryCount').value = data.inquiryCount || 0;
+            $('visitorCount').value = data.visitorCount || 0;
+            $('socialCount').value = data.socialCount || 0;
+            $('developCount').value = data.developCount || 0;
+
+            // 文本输入
+            $('optimizeProduct').value = data.optimizeProduct || '';
+            $('uploadProduct').value = data.uploadProduct || '';
+            $('oldClientName').value = data.oldClientName || '';
+
+            // 平台标签
+            setPlatforms(data.platforms || []);
+
+            // 生活
+            $('wakeTime').value = data.wakeTime || '';
+            $('weight').value = data.weight || '';
+            $('water').value = data.water || '';
+            $('bowel').value = data.bowel || '';
+            $('exercise').value = data.exercise || '';
+            $('learning').value = data.learning || '';
+            $('win').value = data.win || '';
+            $('improve').value = data.improve || '';
+
+            // 状态
+            const status = $('saveStatus');
+            const lifeStatus = $('lifeSaveStatus');
+            if (data.saved) {
+                status.className = 'status-badge done';
+                status.textContent = '✅ 已保存';
+                lifeStatus.className = 'status-badge done';
+                lifeStatus.textContent = '✅ 已保存';
+            } else {
+                status.className = 'status-badge pending';
+                status.textContent = '⏳ 未保存';
+                lifeStatus.className = 'status-badge pending';
+                lifeStatus.textContent = '⏳ 未保存';
+            }
+
+            // 周信息
+            updateWeekInfo(date);
+        }
+
+        function collectData() {
+            const date = $('recordDate').value || todayStr();
+            const toggles = getToggles();
+
+            return {
+                date: date,
+                // 平台执行
+                replied: toggles.replied || false,
+                visitor: toggles.visitor || false,
+                customer: toggles.customer || false,
+                inquiryCount: parseInt($('inquiryCount').value) || 0,
+                visitorCount: parseInt($('visitorCount').value) || 0,
+                // 产品工作
+                optimize: toggles.optimize || false,
+                optimizeProduct: $('optimizeProduct').value.trim(),
+                upload: toggles.upload || false,
+                uploadProduct: $('uploadProduct').value.trim(),
+                // 社媒
+                social: toggles.social || false,
+                socialCount: parseInt($('socialCount').value) || 0,
+                platforms: getSelectedPlatforms(),
+                // 客户维护
+                oldclient: toggles.oldclient || false,
+                oldClientName: $('oldClientName').value.trim(),
+                develop: toggles.develop || false,
+                developCount: parseInt($('developCount').value) || 0,
+                // 生活
+                wakeTime: $('wakeTime').value,
+                weight: $('weight').value,
+                water: $('water').value,
+                bowel: $('bowel').value,
+                exercise: $('exercise').value,
+                learning: $('learning').value.trim(),
+                win: $('win').value.trim(),
+                improve: $('improve').value.trim(),
+                saved: true
+            };
+        }
+
+        function saveCurrent() {
+            const data = collectData();
+            saveDayData(data.date, data);
+            loadDay(data.date);
+            showToast('✅ 已保存！', 'success');
+        }
+
+        // ================================================================
+        //  周汇总
+        // ================================================================
+        function getWeekRange(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(d);
+            monday.setDate(diff);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            const fmt = (dt) => dt.toISOString().slice(0, 10);
+            return { start: fmt(monday), end: fmt(sunday) };
+        }
+
+        function updateWeekInfo(dateStr) {
+            const range = getWeekRange(dateStr);
+            $('weekInfo').textContent = `📅 ${range.start} ~ ${range.end}`;
+            renderWeekSummary(range.start, range.end);
+        }
+
+        function renderWeekSummary(start, end) {
+            const all = getAllData();
+            const days = [];
+            let current = new Date(start + 'T00:00:00');
+            const endDate = new Date(end + 'T00:00:00');
+            while (current <= endDate) {
+                const key = current.toISOString().slice(0, 10);
+                if (all[key]) {
+                    days.push({ date: key, data: all[key] });
+                } else {
+                    days.push({ date: key, data: null });
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            // 统计
+            let totalDays = 0,
+                replied = 0,
+                visitor = 0,
+                optimize = 0,
+                upload = 0,
+                social = 0,
+                oldclient = 0,
+                develop = 0;
+            let repliedCount = 0,
+                visitorCount = 0,
+                socialCount = 0,
+                developCount = 0;
+
+            days.forEach(d => {
+                if (d.data && d.data.saved) {
+                    totalDays++;
+                    if (d.data.replied) replied++;
+                    if (d.data.visitor) visitor++;
+                    if (d.data.optimize) optimize++;
+                    if (d.data.upload) upload++;
+                    if (d.data.social) social++;
+                    if (d.data.oldclient) oldclient++;
+                    if (d.data.develop) develop++;
+                    repliedCount += d.data.inquiryCount || 0;
+                    visitorCount += d.data.visitorCount || 0;
+                    socialCount += d.data.socialCount || 0;
+                    developCount += d.data.developCount || 0;
+                }
+            });
+
+            $('wDays').textContent = totalDays;
+            $('wReplied').textContent = replied + '天';
+            $('wVisitor').textContent = visitor + '天';
+            $('wOptimize').textContent = optimize + '天';
+            $('wUpload').textContent = upload + '天';
+            $('wSocial').textContent = social + '天';
+            $('wOldClient').textContent = oldclient + '天';
+            $('wDevelop').textContent = develop + '天';
+
+            // 详情
+            let detailHtml = '';
+            days.forEach(d => {
+                const label = d.date.slice(5);
+                if (d.data && d.data.saved) {
+                    const tasks = [];
+                    if (d.data.replied) tasks.push('✉️');
+                    if (d.data.visitor) tasks.push('👤');
+                    if (d.data.optimize) tasks.push('🔧');
+                    if (d.data.upload) tasks.push('📤');
+                    if (d.data.social) tasks.push('📢');
+                    if (d.data.oldclient) tasks.push('🤝');
+                    if (d.data.develop) tasks.push('🚀');
+                    const emoji = tasks.length > 0 ? tasks.join(' ') : '✅';
+                    detailHtml += `<div class="day-row"><span>${label}</span><span class="done">${emoji}</span></div>`;
+                } else {
+                    detailHtml += `<div class="day-row"><span>${label}</span><span class="miss">—</span></div>`;
+                }
+            });
+            $('weekDetail').innerHTML = detailHtml;
+            $('weekRange').textContent = `${start} ~ ${end}`;
+        }
+
+        // ================================================================
+        //  导出 / 导入 / 清除
+        // ================================================================
+        function exportData() {
+            const all = getAllData();
+            if (Object.keys(all).length === 0) {
+                showToast('暂无数据可导出', '');
+                return;
+            }
+            const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `sop_data_${todayStr()}.json`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('📤 导出成功！', 'success');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (typeof data !== 'object' || Array.isArray(data)) throw new Error('格式错误');
+                    if (confirm('导入将覆盖当前所有数据，确定继续吗？')) {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        const date = $('recordDate').value || todayStr();
+                        loadDay(date);
+                        showToast('✅ 导入成功！', 'success');
+                    }
+                } catch (err) {
+                    showToast('❌ 文件格式无效', '');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (confirm('⚠️ 确定清除所有数据吗？此操作不可撤销！')) {
+                localStorage.removeItem(STORAGE_KEY);
+                const date = $('recordDate').value || todayStr();
+                loadDay(date);
+                showToast('已清除所有数据', '');
+            }
+        }
+
+        // ================================================================
+        //  Toast
+        // ================================================================
+        let toastTimer = null;
+
+        function showToast(msg, type) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast';
+            if (type === 'success') el.classList.add('success');
+            clearTimeout(toastTimer);
+            void el.offsetWidth;
+            el.classList.add('show');
+            toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+        }
+
+        // ================================================================
+        //  初始化
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = $('recordDate');
+            dateInput.value = todayStr();
+
+            // 加载
+            loadDay(dateInput.value);
+
+            // 日期切换
+            dateInput.addEventListener('change', function() {
+                loadDay(this.value);
+            });
+
+            // 保存按钮
+            $('saveBtn').addEventListener('click', saveCurrent);
+            $('saveLifeBtn').addEventListener('click', saveCurrent);
+
+            // Tab 切换
+            document.querySelectorAll('.tab-bar button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const target = this.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+
+            // 快捷键 Ctrl+S
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveCurrent();
+                }
+            });
+
+            console.log('📋 SOP 打卡已启动！');
+        });
+    </script>
+
+</body>
+</html>
